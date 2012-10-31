@@ -9,6 +9,14 @@ class WorkersController < ApplicationController
     end
     # new lines ends
   end
+  def create
+    require "digest/md5"
+    pass = Digest::MD5.hexdigest(params[:password])
+    Worker.create(:name => params[:name],
+      :username => params[:username],
+      :password => pass,
+      :department => params[:department])
+  end
   def login
     if params[:username] == nil
       username = password = ""
@@ -21,11 +29,8 @@ class WorkersController < ApplicationController
       username + "','" + password + "')")
     id = idString.to_i
     cookies.signed[:id] = id
-    if id == 1
       redirect_to :controller => "workers", 
-        :action => "admin"
-    elsif id > 1
-      redirect_to :controller => "workshops", :action => "index"
+        :action => "login"
     end 
   end
   def logout
